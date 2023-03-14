@@ -1,33 +1,35 @@
-"use client";
+'use client';
 
-import ConsentsStep from "../steps/consents";
-import DocumentStep from "../steps/document";
-import IdentificationStep from "../steps/identification";
+import useOnboarding from '@/hooks/onboarding-manager';
+import ConsentsStep from '../steps/consents';
+import DocumentStep from '../steps/document';
+import IdentificationStep from '../steps/identification';
+import { WelcomeStep } from '../steps/welcome';
+import 'antd/dist/reset.css';
+import ResultStep from '../steps/result/indext';
+import PasswordStep from '../steps/password';
 
-interface OnboardingContainerProps {
-  stepName: string;
-}
+export function OnboardingContainer() {
+  const { currentStep } = useOnboarding();
 
-export default function OnboardingContainer(props: OnboardingContainerProps) {
-  const { stepName } = props;
-
-  function renderContent() {
+  function renderContent(stepName: string) {
     switch (stepName) {
-      case "identificationStep":
+      case 'identification':
         return <IdentificationStep />;
-      case "documentStep":
+      case 'document':
         return <DocumentStep />;
-      case "consentsStep":
+      case 'consents':
         return <ConsentsStep />;
+      case 'password':
+        return <PasswordStep />;
+      case 'result':
+        return <ResultStep />;
+      case 'welcome':
+        return <WelcomeStep />;
       default:
-        return <span>Step not found</span>;
+        return <section></section>;
     }
   }
 
-  return (
-    <section>
-      <h2>{stepName}</h2>
-      {renderContent()}
-    </section>
-  );
+  return renderContent(currentStep.name);
 }

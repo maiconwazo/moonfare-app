@@ -4,7 +4,7 @@ import useOnboarding from '@/hooks/onboarding-manager';
 
 const roboto700 = Roboto({ weight: '700', subsets: ['latin'] });
 
-export default function ConsentsStep() {
+export default function ResultStep() {
   const { executeInstance } = useOnboarding();
 
   const onSubmit = (e: any) => {
@@ -16,10 +16,10 @@ export default function ConsentsStep() {
     <section>
       <header>
         <p className={`${genericStyles.title} ${roboto700.className}`}>
-          Consents
+          We are almost there
         </p>
         <p className={genericStyles.subTitle}>
-          Read everything before continuing
+          We are proccessing your info, come back later
         </p>
       </header>
       <br />

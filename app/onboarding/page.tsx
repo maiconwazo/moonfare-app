@@ -1,17 +1,13 @@
-'use client';
-
-import OnboardingContainer from '@/components/onboarding/container';
-import useOnboarding, { OnboardingProvider } from '@/providers/onboarding';
+import styles from './page.module.css';
+import { OnboardingContainer } from '@/components/onboarding/container';
+import { OnboardingManagerProvider } from '@/hooks/onboarding-manager';
 
 export default function OnboardingPage() {
-  const { currentStep } = useOnboarding();
-
   return (
-    <article>
-      <OnboardingProvider>
-        <h1>Onboarding Process</h1>
-        <OnboardingContainer stepName={currentStep}></OnboardingContainer>
-      </OnboardingProvider>
+    <article className={styles.card}>
+      <OnboardingManagerProvider>
+        <OnboardingContainer />
+      </OnboardingManagerProvider>
     </article>
   );
 }

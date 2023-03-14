@@ -4,7 +4,7 @@ import useOnboarding from '@/hooks/onboarding-manager';
 
 const roboto700 = Roboto({ weight: '700', subsets: ['latin'] });
 
-export default function ConsentsStep() {
+export default function PasswordStep() {
   const { executeInstance } = useOnboarding();
 
   const onSubmit = (e: any) => {
@@ -16,16 +16,16 @@ export default function ConsentsStep() {
     <section>
       <header>
         <p className={`${genericStyles.title} ${roboto700.className}`}>
-          Consents
+          Everything is set up
         </p>
         <p className={genericStyles.subTitle}>
-          Read everything before continuing
+          Please, create a password for future logins
         </p>
       </header>
       <br />
       <form className={genericStyles.form} onSubmit={onSubmit}>
         <button className={genericStyles.button} type="submit">
-          Next
+          Finish
         </button>
       </form>
     </section>

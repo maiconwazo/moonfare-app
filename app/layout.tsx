@@ -1,4 +1,8 @@
 import './globals.css';
+import 'react-toastify/dist/ReactToastify.css';
+import { Roboto } from 'next/font/google';
+
+const roboto400 = Roboto({ weight: '400', subsets: ['latin'] });
 
 export const metadata = {
   title: 'Create Next App',
@@ -12,7 +16,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className={roboto400.className}>{children}</body>
     </html>
   );
 }
