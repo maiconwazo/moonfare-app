@@ -40,3 +40,10 @@
     border: none;
     cursor: pointer;
 }
+
+
+.rollbackButton:focus,
+.rollbackButton:focus-visible {
+    border: none;
+    outline: none;
+}

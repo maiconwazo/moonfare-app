@@ -64,16 +64,22 @@
     transition: all .2s ease-out
 }
 
+.form.submitted input:invalid {
+    border: solid 1px red;
+    outline: none;
+}
+
+.form.submitted input:invalid:focus {
+    border: solid 1px var(--primary-color);
+    outline: none;
+}
+
+.form button:focus,
+.form button:focus-visible,
+.form select:focus,
 .form input:focus {
     border: solid 1px var(--primary-color);
     outline: none;
-    border-radius: 5px;
-    padding: 14px;
-    font-size: 16px;
-}
-
-.form input:invalid {
-    border: solid 1px red;
 }
 
 .errorField {
@@ -86,4 +92,8 @@
     padding: 20px;
     border-radius: 10px;
     margin-bottom: 20px;
+}
+
+.option {
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }

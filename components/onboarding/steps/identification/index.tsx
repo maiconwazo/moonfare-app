@@ -1,16 +1,63 @@
 import genericStyles from '../index.module.css';
 import { Roboto } from 'next/font/google';
 import useOnboarding from '@/hooks/onboarding-manager';
+import { useRef, useState } from 'react';
+import InputMask from 'react-input-mask';
+import { format, isValid, parse, parseISO } from 'date-fns';
+import {
+  acceptOnlyLetterAndNumbers,
+  acceptOnlyLetters,
+} from '@/utils/input-functions';
 
 const roboto700 = Roboto({ weight: '700', subsets: ['latin'] });
 
 export default function IdentificationStep() {
   const { executeInstance } = useOnboarding();
+  const [submitted, setSubmitted] = useState(false);
+  const [documentNumberMaxLength, setDocumentNumberMaxLength] = useState(9);
+  const documentNumberRef = useRef<HTMLInputElement>(null);
 
   const onSubmit = (e: any) => {
     e.preventDefault();
+
     const formData = new FormData(e.target);
+
+    const birthdate = formData.get('birthdate') as string;
+    if (birthdate) {
+      const date = parse(birthdate, 'dd/MM/yyyy', new Date());
+      const formattedDate = format(date, 'yyy-MM-dd HH:mm:ss') + 'Z';
+
+      formData.set('birthdate', formattedDate);
+      console.log(formattedDate);
+    }
+
     executeInstance(formData);
+  };
+
+  const fixDate = (e: any) => {
+    const value = e.target.value;
+
+    try {
+      const date = parse(value, 'dd/MM/yyyy', new Date());
+      if (!isValid(date)) e.target.value = '';
+    } catch {
+      console.log('erro');
+      e.target.value = '';
+    }
+  };
+
+  const getDocumentNumberLength = (e: any) => {
+    if (documentNumberRef?.current) documentNumberRef.current.value = '';
+    switch (e.target.value) {
+      case 'id':
+        return 9;
+      case 'passport':
+        return 9;
+      case 'driverLicense':
+        return 11;
+      default:
+        return 11;
+    }
   };
 
   return (
@@ -24,16 +71,34 @@ export default function IdentificationStep() {
         </p>
       </header>
       <br />
-      <form className={genericStyles.form} onSubmit={onSubmit}>
+      <form
+        className={`${genericStyles.form} ${
+          submitted && genericStyles.submitted
+        }`}
+        onSubmit={onSubmit}
+      >
         <section className={genericStyles.group}>
           <section className={genericStyles.formItem}>
             <label htmlFor="documentType">
               Document type <span aria-label="required">*</span>
             </label>
-            <select id="documentType" name="documentType" required>
-              <option value="id">ID</option>
-              <option value="passport">Passport</option>
-              <option value="driverLicense">Driver license</option>
+            <select
+              id="documentType"
+              name="documentType"
+              required
+              onChange={(e) =>
+                setDocumentNumberMaxLength(getDocumentNumberLength(e))
+              }
+            >
+              <option className={genericStyles.option} value="id">
+                ID
+              </option>
+              <option className={genericStyles.option} value="passport">
+                Passport
+              </option>
+              <option className={genericStyles.option} value="driverLicense">
+                Driver license
+              </option>
             </select>
           </section>
           <section className={genericStyles.formItem}>
@@ -41,22 +106,33 @@ export default function IdentificationStep() {
               Doc. Number <span aria-label="required">*</span>
             </label>
             <input
+              ref={documentNumberRef}
               type="text"
               id="documentNumber"
               name="documentNumber"
-              // required
+              required
+              autoComplete="off"
+              pattern="[a-zA-Z0-9]+"
+              maxLength={documentNumberMaxLength}
+              onChange={(e: any) =>
+                (e.target.value = e.target.value.toUpperCase())
+              }
+              onKeyDown={acceptOnlyLetterAndNumbers}
             />
           </section>
           <section className={genericStyles.formItem}>
             <label htmlFor="birthdate">
               Birthdate <span aria-label="required">*</span>
             </label>
-            <input
+            <InputMask
               type="text"
               id="birthdate"
               name="birthdate"
-              // placeholder="00/00/0000"
-              // required
+              autoComplete="off"
+              placeholder="DD/MM/YYYY"
+              required
+              mask="99/99/9999"
+              onBlur={fixDate}
             />
           </section>
         </section>
@@ -69,8 +145,9 @@ export default function IdentificationStep() {
             id="firstName"
             name="firstName"
             autoComplete="off"
-            // pattern="[a-zA-Z]+"
-            // required
+            pattern="[a-zA-Z ]+"
+            required
+            onKeyDown={acceptOnlyLetters}
           />
         </section>
         <section className={genericStyles.formItem}>
@@ -82,11 +159,16 @@ export default function IdentificationStep() {
             id="familyName"
             name="familyName"
             autoComplete="off"
-            // required
-            // pattern="[a-zA-Z]+"
+            pattern="[a-zA-Z ]+"
+            required
+            onKeyDown={acceptOnlyLetters}
           />
         </section>
-        <button className={genericStyles.button} type="submit">
+        <button
+          className={genericStyles.button}
+          type="submit"
+          onClick={() => setSubmitted(true)}
+        >
           Next
         </button>
       </form>
