@@ -9,7 +9,7 @@ export default function DocumentStep() {
 
   const onSubmit = (e: any) => {
     e.preventDefault();
-    executeInstance();
+    executeInstance(new FormData());
   };
 
   return (

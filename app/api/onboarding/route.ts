@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { FlowInformationResponse, OnboardingResponse } from './interfaces';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
@@ -56,16 +56,22 @@ export async function POST() {
   }
 }
 
-export async function PUT() {
+export async function PUT(request: NextRequest) {
   try {
+    const body = await request.json();
+
     const instanceId = cookies().get('onboarding_instance_id');
     const response = await fetch(
       `${process.env.GATEWAY}/v1/api/onboarding/execute`,
       {
         method: 'put',
         credentials: 'include',
-        headers: [['Cookie', `${instanceId?.name}=${instanceId?.value}`]],
+        headers: [
+          ['Cookie', `${instanceId?.name}=${instanceId?.value}`],
+          ['Content-Type', 'application/json'],
+        ],
         cache: 'no-cache',
+        body: JSON.stringify(body),
       },
     );
 

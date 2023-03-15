@@ -24,7 +24,7 @@ interface OnboardingType {
   stepCount: number;
   loading: boolean;
   startInstance(): void;
-  executeInstance(): void;
+  executeInstance(data: any): void;
 }
 
 interface StepInformation {
@@ -77,7 +77,7 @@ export function OnboardingManagerProvider(props: { children: ReactNode }) {
   const getFlowInformation = useCallback(async () => {
     setLoading(true);
     try {
-      fetch('/api/onboarding/', { method: 'get', cache: 'no-cache' })
+      await fetch('/api/onboarding/', { method: 'get', cache: 'no-cache' })
         .then(async (res) => {
           const jsonResponse = (await res.json()) as FlowInformationResponse;
           if (!jsonResponse.success) return handleError(jsonResponse.error);
@@ -95,7 +95,7 @@ export function OnboardingManagerProvider(props: { children: ReactNode }) {
   const startInstance = useCallback(async () => {
     setLoading(true);
     try {
-      fetch('/api/onboarding/', {
+      await fetch('/api/onboarding/', {
         method: 'post',
         credentials: 'include',
         cache: 'no-cache',
@@ -119,19 +119,27 @@ export function OnboardingManagerProvider(props: { children: ReactNode }) {
     }
   }, []);
 
-  const executeInstance = useCallback(async () => {
+  const executeInstance = useCallback(async (data: any) => {
     setLoading(true);
     try {
-      fetch('/api/onboarding/', {
+      await fetch('/api/onboarding/', {
         method: 'put',
         credentials: 'include',
         cache: 'no-cache',
+        body: JSON.stringify(data),
       })
         .then(async (res) => {
           const jsonResponse = (await res.json()) as OnboardingResponse;
           if (!jsonResponse.success) return handleError(jsonResponse.error);
 
-          if (jsonResponse.data.isCompleted) return router.push('/');
+          if (jsonResponse.data.isCompleted) {
+            setCurrentStep({
+              name: '',
+              order: -1,
+            });
+
+            return router.push('/');
+          }
 
           setCurrentStep((prev) => ({
             name: jsonResponse.data.currentStep.name,
@@ -149,7 +157,7 @@ export function OnboardingManagerProvider(props: { children: ReactNode }) {
   const deleteInstance = useCallback(async () => {
     setLoading(true);
     try {
-      fetch('/api/onboarding/', { method: 'delete', cache: 'no-cache' })
+      await fetch('/api/onboarding/', { method: 'delete', cache: 'no-cache' })
         .then(async (res) => {
           //
         })

@@ -9,7 +9,7 @@ export default function ConsentsStep() {
 
   const onSubmit = (e: any) => {
     e.preventDefault();
-    executeInstance();
+    executeInstance({});
   };
 
   return (

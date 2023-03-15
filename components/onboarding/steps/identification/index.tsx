@@ -9,7 +9,8 @@ export default function IdentificationStep() {
 
   const onSubmit = (e: any) => {
     e.preventDefault();
-    executeInstance();
+    const formData = new FormData(e.target);
+    executeInstance(Object.fromEntries(formData));
   };
 
   return (
