@@ -10,7 +10,7 @@ export default function IdentificationStep() {
   const onSubmit = (e: any) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    executeInstance(Object.fromEntries(formData));
+    executeInstance(formData);
   };
 
   return (
@@ -31,9 +31,9 @@ export default function IdentificationStep() {
               Document type <span aria-label="required">*</span>
             </label>
             <select id="documentType" name="documentType" required>
-              <option value="1">ID</option>
-              <option value="2">Passport</option>
-              <option value="3">Driver license</option>
+              <option value="id">ID</option>
+              <option value="passport">Passport</option>
+              <option value="driverLicense">Driver license</option>
             </select>
           </section>
           <section className={genericStyles.formItem}>

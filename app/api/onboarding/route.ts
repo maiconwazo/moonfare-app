@@ -58,7 +58,7 @@ export async function POST() {
 
 export async function PUT(request: NextRequest) {
   try {
-    const body = await request.json();
+    const formData = await request.formData();
 
     const instanceId = cookies().get('onboarding_instance_id');
     const response = await fetch(
@@ -68,14 +68,17 @@ export async function PUT(request: NextRequest) {
         credentials: 'include',
         headers: [
           ['Cookie', `${instanceId?.name}=${instanceId?.value}`],
-          ['Content-Type', 'application/json'],
+          // ['Content-Type', 'multipart/form-data'],
         ],
         cache: 'no-cache',
-        body: JSON.stringify(body),
+        body: formData,
       },
     );
 
     const json = (await response.json()) as OnboardingResponse;
+
+    if (!json.success) return NextResponse.json(json.error);
+
     const instanceIdCookie = response.headers
       .get('set-cookie')
       ?.split(';')

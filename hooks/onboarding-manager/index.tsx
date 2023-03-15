@@ -24,12 +24,14 @@ interface OnboardingType {
   stepCount: number;
   loading: boolean;
   startInstance(): void;
+  refreshInstanceSilently(): void;
   executeInstance(data: any): void;
 }
 
 interface StepInformation {
   name: string;
   order: number;
+  status: string;
 }
 
 const OnboardingContext = createContext({} as OnboardingType);
@@ -40,6 +42,7 @@ export function OnboardingManagerProvider(props: { children: ReactNode }) {
   const [currentStep, setCurrentStep] = useState<StepInformation>({
     name: 'welcome',
     order: 0,
+    status: '',
   });
   const [loading, setLoading] = useState(true);
   const [stepCount, setStepCount] = useState(0);
@@ -48,6 +51,7 @@ export function OnboardingManagerProvider(props: { children: ReactNode }) {
     setCurrentStep({
       name: 'welcome',
       order: 0,
+      status: '',
     });
   }
 
@@ -73,6 +77,31 @@ export function OnboardingManagerProvider(props: { children: ReactNode }) {
         break;
     }
   }
+
+  const refreshInstanceSilently = useCallback(async () => {
+    try {
+      await fetch('/api/onboarding/', {
+        method: 'post',
+        credentials: 'include',
+        cache: 'no-cache',
+      })
+        .then(async (res) => {
+          const jsonResponse = (await res.json()) as OnboardingResponse;
+          if (!jsonResponse.success) return handleError(jsonResponse.error);
+
+          if (jsonResponse.data.isCompleted) return router.push('/onboarding');
+
+          setCurrentStep({
+            name: jsonResponse.data.currentStep.name,
+            order: jsonResponse.data.currentStep.order,
+            status: jsonResponse.data.currentStep.status,
+          });
+        })
+        .catch((err) => {
+          handleError(err);
+        });
+    } catch {}
+  }, []);
 
   const getFlowInformation = useCallback(async () => {
     setLoading(true);
@@ -108,7 +137,8 @@ export function OnboardingManagerProvider(props: { children: ReactNode }) {
 
           setCurrentStep((prev) => ({
             name: jsonResponse.data.currentStep.name,
-            order: jsonResponse.data.currentStep.order ?? prev.order,
+            order: jsonResponse.data.currentStep.order,
+            status: jsonResponse.data.currentStep.status,
           }));
         })
         .catch((err) => {
@@ -126,7 +156,7 @@ export function OnboardingManagerProvider(props: { children: ReactNode }) {
         method: 'put',
         credentials: 'include',
         cache: 'no-cache',
-        body: JSON.stringify(data),
+        body: data,
       })
         .then(async (res) => {
           const jsonResponse = (await res.json()) as OnboardingResponse;
@@ -136,6 +166,7 @@ export function OnboardingManagerProvider(props: { children: ReactNode }) {
             setCurrentStep({
               name: '',
               order: -1,
+              status: '',
             });
 
             return router.push('/');
@@ -143,7 +174,8 @@ export function OnboardingManagerProvider(props: { children: ReactNode }) {
 
           setCurrentStep((prev) => ({
             name: jsonResponse.data.currentStep.name,
-            order: jsonResponse.data.currentStep.order ?? prev.order,
+            order: jsonResponse.data.currentStep.order,
+            status: jsonResponse.data.currentStep.status,
           }));
         })
         .catch((err) => {
@@ -181,6 +213,7 @@ export function OnboardingManagerProvider(props: { children: ReactNode }) {
         stepCount,
         startInstance,
         executeInstance,
+        refreshInstanceSilently,
       }}
     >
       <ToastContainer />

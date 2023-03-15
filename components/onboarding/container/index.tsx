@@ -6,7 +6,6 @@ import DocumentStep from '../steps/document';
 import IdentificationStep from '../steps/identification';
 import { WelcomeStep } from '../steps/welcome';
 import 'antd/dist/reset.css';
-import ResultStep from '../steps/result/indext';
 import PasswordStep from '../steps/password';
 
 export function OnboardingContainer() {
@@ -22,8 +21,6 @@ export function OnboardingContainer() {
         return <ConsentsStep />;
       case 'password':
         return <PasswordStep />;
-      case 'result':
-        return <ResultStep />;
       case 'welcome':
         return <WelcomeStep />;
       default:
