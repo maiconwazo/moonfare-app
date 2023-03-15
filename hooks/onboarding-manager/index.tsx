@@ -26,6 +26,7 @@ interface OnboardingType {
   startInstance(): void;
   refreshInstanceSilently(): void;
   executeInstance(data: any): void;
+  rollbackInstance(): void;
 }
 
 interface StepInformation {
@@ -80,7 +81,7 @@ export function OnboardingManagerProvider(props: { children: ReactNode }) {
 
   const refreshInstanceSilently = useCallback(async () => {
     try {
-      await fetch('/api/onboarding/', {
+      await fetch('/api/onboarding/start', {
         method: 'post',
         credentials: 'include',
         cache: 'no-cache',
@@ -106,7 +107,10 @@ export function OnboardingManagerProvider(props: { children: ReactNode }) {
   const getFlowInformation = useCallback(async () => {
     setLoading(true);
     try {
-      await fetch('/api/onboarding/', { method: 'get', cache: 'no-cache' })
+      await fetch('/api/onboarding/getInformation', {
+        method: 'get',
+        cache: 'no-cache',
+      })
         .then(async (res) => {
           const jsonResponse = (await res.json()) as FlowInformationResponse;
           if (!jsonResponse.success) return handleError(jsonResponse.error);
@@ -124,7 +128,7 @@ export function OnboardingManagerProvider(props: { children: ReactNode }) {
   const startInstance = useCallback(async () => {
     setLoading(true);
     try {
-      await fetch('/api/onboarding/', {
+      await fetch('/api/onboarding/start', {
         method: 'post',
         credentials: 'include',
         cache: 'no-cache',
@@ -152,7 +156,7 @@ export function OnboardingManagerProvider(props: { children: ReactNode }) {
   const executeInstance = useCallback(async (data: any) => {
     setLoading(true);
     try {
-      await fetch('/api/onboarding/', {
+      await fetch('/api/onboarding/execute', {
         method: 'put',
         credentials: 'include',
         cache: 'no-cache',
@@ -186,10 +190,38 @@ export function OnboardingManagerProvider(props: { children: ReactNode }) {
     }
   }, []);
 
+  const rollbackInstance = useCallback(async () => {
+    setLoading(true);
+    try {
+      await fetch('/api/onboarding/rollback', {
+        method: 'post',
+        cache: 'no-cache',
+      })
+        .then(async (res) => {
+          const jsonResponse = (await res.json()) as OnboardingResponse;
+          if (!jsonResponse.success) return handleError(jsonResponse.error);
+
+          setCurrentStep({
+            name: jsonResponse.data.currentStep.name,
+            order: jsonResponse.data.currentStep.order,
+            status: jsonResponse.data.currentStep.status,
+          });
+        })
+        .catch((err) => {
+          handleError(err);
+        });
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   const deleteInstance = useCallback(async () => {
     setLoading(true);
     try {
-      await fetch('/api/onboarding/', { method: 'delete', cache: 'no-cache' })
+      await fetch('/api/onboarding/delete', {
+        method: 'delete',
+        cache: 'no-cache',
+      })
         .then(async (res) => {
           //
         })
@@ -214,6 +246,7 @@ export function OnboardingManagerProvider(props: { children: ReactNode }) {
         startInstance,
         executeInstance,
         refreshInstanceSilently,
+        rollbackInstance,
       }}
     >
       <ToastContainer />

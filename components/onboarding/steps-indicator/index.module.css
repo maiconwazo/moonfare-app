@@ -27,3 +27,16 @@
     background-color: var(--primary-color);
     flex-grow: 1;
 }
+
+.rollbackButton {
+    position: absolute;
+    left: 30px;
+    top: 40px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
