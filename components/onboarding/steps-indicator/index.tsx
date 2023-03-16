@@ -3,11 +3,13 @@ import { LeftOutlined } from '@ant-design/icons';
 import styles from './index.module.css';
 
 export function OnboardingStepsIndicator(props: {
+  currentStepStatus: string;
   currentStepOrder: number;
   totalSteps: number;
 }) {
-  const { currentStepOrder, totalSteps } = props;
-  const { rollbackInstance } = useOnboarding();
+  const { currentStepStatus, currentStepOrder, totalSteps } = props;
+  const { rollbackInstance, loading } = useOnboarding();
+  console.log(currentStepStatus);
 
   const stepArray = [];
   for (let i = 0; i < totalSteps; i++) {
@@ -16,12 +18,14 @@ export function OnboardingStepsIndicator(props: {
 
   return (
     <header className={styles.header}>
-      {currentStepOrder > 1 && (
-        <button onClick={rollbackInstance} className={styles.rollbackButton}>
-          <LeftOutlined style={{ fontSize: '30px' }} />
-          Back
-        </button>
-      )}
+      {currentStepOrder > 1 &&
+        !loading &&
+        ['started', 'failed'].indexOf(currentStepStatus) > -1 && (
+          <button onClick={rollbackInstance} className={styles.rollbackButton}>
+            <LeftOutlined style={{ fontSize: '30px' }} />
+            Back
+          </button>
+        )}
       <div className={styles.container}>
         {stepArray.map((step) => {
           const isActive = currentStepOrder > step || currentStepOrder === -1;

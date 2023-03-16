@@ -2,6 +2,7 @@ interface StepInformation {
   name: string;
   order: number;
   status: string;
+  extra: string;
 }
 
 export interface DataResponse {

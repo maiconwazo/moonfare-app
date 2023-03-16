@@ -12,10 +12,7 @@ export async function PUT(request: NextRequest) {
       {
         method: 'put',
         credentials: 'include',
-        headers: [
-          ['Cookie', `${instanceId?.name}=${instanceId?.value}`],
-          // ['Content-Type', 'multipart/form-data'],
-        ],
+        headers: [['Cookie', `${instanceId?.name}=${instanceId?.value}`]],
         cache: 'no-cache',
         body: formData,
       },

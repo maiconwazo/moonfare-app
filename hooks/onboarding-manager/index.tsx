@@ -27,12 +27,14 @@ interface OnboardingType {
   refreshInstanceSilently(): void;
   executeInstance(data: any): void;
   rollbackInstance(): void;
+  deleteInstance(): void;
 }
 
 interface StepInformation {
   name: string;
   order: number;
   status: string;
+  extra: string;
 }
 
 const OnboardingContext = createContext({} as OnboardingType);
@@ -44,6 +46,7 @@ export function OnboardingManagerProvider(props: { children: ReactNode }) {
     name: 'welcome',
     order: 0,
     status: '',
+    extra: '',
   });
   const [loading, setLoading] = useState(true);
   const [stepCount, setStepCount] = useState(0);
@@ -53,6 +56,7 @@ export function OnboardingManagerProvider(props: { children: ReactNode }) {
       name: 'welcome',
       order: 0,
       status: '',
+      extra: '',
     });
   }
 
@@ -96,6 +100,7 @@ export function OnboardingManagerProvider(props: { children: ReactNode }) {
             name: jsonResponse.data.currentStep.name,
             order: jsonResponse.data.currentStep.order,
             status: jsonResponse.data.currentStep.status,
+            extra: jsonResponse.data.currentStep.extra,
           });
         })
         .catch((err) => {
@@ -143,6 +148,7 @@ export function OnboardingManagerProvider(props: { children: ReactNode }) {
             name: jsonResponse.data.currentStep.name,
             order: jsonResponse.data.currentStep.order,
             status: jsonResponse.data.currentStep.status,
+            extra: jsonResponse.data.currentStep.extra,
           }));
         })
         .catch((err) => {
@@ -171,16 +177,18 @@ export function OnboardingManagerProvider(props: { children: ReactNode }) {
               name: '',
               order: -1,
               status: '',
+              extra: '',
             });
 
             return router.push('/');
           }
 
-          setCurrentStep((prev) => ({
+          setCurrentStep({
             name: jsonResponse.data.currentStep.name,
             order: jsonResponse.data.currentStep.order,
             status: jsonResponse.data.currentStep.status,
-          }));
+            extra: jsonResponse.data.currentStep.extra,
+          });
         })
         .catch((err) => {
           handleError(err);
@@ -205,6 +213,7 @@ export function OnboardingManagerProvider(props: { children: ReactNode }) {
             name: jsonResponse.data.currentStep.name,
             order: jsonResponse.data.currentStep.order,
             status: jsonResponse.data.currentStep.status,
+            extra: jsonResponse.data.currentStep.extra,
           });
         })
         .catch((err) => {
@@ -223,7 +232,7 @@ export function OnboardingManagerProvider(props: { children: ReactNode }) {
         cache: 'no-cache',
       })
         .then(async (res) => {
-          //
+          resetOnboarding();
         })
         .catch((err) => {
           handleError(err);
@@ -247,10 +256,12 @@ export function OnboardingManagerProvider(props: { children: ReactNode }) {
         executeInstance,
         refreshInstanceSilently,
         rollbackInstance,
+        deleteInstance,
       }}
     >
       <ToastContainer />
       <OnboardingStepsIndicator
+        currentStepStatus={currentStep.status}
         currentStepOrder={currentStep.order}
         totalSteps={stepCount}
       />

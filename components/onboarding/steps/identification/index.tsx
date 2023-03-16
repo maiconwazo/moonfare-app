@@ -1,7 +1,7 @@
 import genericStyles from '../index.module.css';
 import { Roboto } from 'next/font/google';
 import useOnboarding from '@/hooks/onboarding-manager';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import InputMask from 'react-input-mask';
 import { format, isValid, parse, parseISO } from 'date-fns';
 import {
@@ -12,10 +12,13 @@ import {
 const roboto700 = Roboto({ weight: '700', subsets: ['latin'] });
 
 export default function IdentificationStep() {
-  const { executeInstance } = useOnboarding();
+  const { executeInstance, currentStep } = useOnboarding();
   const [submitted, setSubmitted] = useState(false);
   const [documentNumberMaxLength, setDocumentNumberMaxLength] = useState(9);
   const documentNumberRef = useRef<HTMLInputElement>(null);
+  const birthdateRef = useRef<InputMask>(null);
+  const documentTypeRef = useRef<HTMLSelectElement>(null);
+  const [extraData, setExtraData] = useState<any>({});
 
   const onSubmit = (e: any) => {
     e.preventDefault();
@@ -28,7 +31,6 @@ export default function IdentificationStep() {
       const formattedDate = format(date, 'yyy-MM-dd HH:mm:ss') + 'Z';
 
       formData.set('birthdate', formattedDate);
-      console.log(formattedDate);
     }
 
     executeInstance(formData);
@@ -41,7 +43,6 @@ export default function IdentificationStep() {
       const date = parse(value, 'dd/MM/yyyy', new Date());
       if (!isValid(date)) e.target.value = '';
     } catch {
-      console.log('erro');
       e.target.value = '';
     }
   };
@@ -59,6 +60,22 @@ export default function IdentificationStep() {
         return 11;
     }
   };
+
+  useEffect(() => {
+    if (currentStep?.extra) {
+      const json = JSON.parse(currentStep.extra);
+      setExtraData(json);
+
+      const parsed = (json.birthdate = json.birthdate
+        ? parseISO(json.birthdate)
+        : new Date());
+      const formated = format(parsed, 'dd/MM/yyyy');
+
+      if (birthdateRef?.current) (birthdateRef.current as any).value = formated;
+      if (documentTypeRef?.current)
+        documentTypeRef.current.value = json.documentType;
+    }
+  }, [currentStep]);
 
   return (
     <section>
@@ -89,6 +106,8 @@ export default function IdentificationStep() {
               onChange={(e) =>
                 setDocumentNumberMaxLength(getDocumentNumberLength(e))
               }
+              defaultValue={extraData.documentType}
+              ref={documentTypeRef}
             >
               <option className={genericStyles.option} value="id">
                 ID
@@ -118,6 +137,7 @@ export default function IdentificationStep() {
                 (e.target.value = e.target.value.toUpperCase())
               }
               onKeyDown={acceptOnlyLetterAndNumbers}
+              defaultValue={extraData.documentNumber}
             />
           </section>
           <section className={genericStyles.formItem}>
@@ -133,6 +153,7 @@ export default function IdentificationStep() {
               required
               mask="99/99/9999"
               onBlur={fixDate}
+              ref={birthdateRef}
             />
           </section>
         </section>
@@ -148,6 +169,7 @@ export default function IdentificationStep() {
             pattern="[a-zA-Z ]+"
             required
             onKeyDown={acceptOnlyLetters}
+            defaultValue={extraData.firstName}
           />
         </section>
         <section className={genericStyles.formItem}>
@@ -162,6 +184,7 @@ export default function IdentificationStep() {
             pattern="[a-zA-Z ]+"
             required
             onKeyDown={acceptOnlyLetters}
+            defaultValue={extraData.familyName}
           />
         </section>
         <button
