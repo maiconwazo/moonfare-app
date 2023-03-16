@@ -22,6 +22,9 @@ export default function InputDocumentPartial() {
   };
 
   const props: UploadProps = {
+    fileList: file ? [file] : undefined,
+    accept: '.jpg,.png',
+    multiple: false,
     onRemove: () => {
       setFile(undefined);
     },
