@@ -109,9 +109,9 @@ export default function IdentificationStep() {
               defaultValue={extraData.documentType}
               ref={documentTypeRef}
             >
-              <option className={genericStyles.option} value="id">
+              {/* <option className={genericStyles.option} value="id">
                 ID
-              </option>
+              </option> */}
               <option className={genericStyles.option} value="passport">
                 Passport
               </option>

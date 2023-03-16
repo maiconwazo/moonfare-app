@@ -113,7 +113,8 @@ export function OnboardingManagerProvider(props: { children: ReactNode }) {
     setLoading(true);
     try {
       await fetch('/api/onboarding/getInformation', {
-        method: 'get',
+        method: 'post',
+        credentials: 'include',
         cache: 'no-cache',
       })
         .then(async (res) => {
@@ -203,6 +204,7 @@ export function OnboardingManagerProvider(props: { children: ReactNode }) {
     try {
       await fetch('/api/onboarding/rollback', {
         method: 'post',
+        credentials: 'include',
         cache: 'no-cache',
       })
         .then(async (res) => {
@@ -230,6 +232,7 @@ export function OnboardingManagerProvider(props: { children: ReactNode }) {
       await fetch('/api/onboarding/delete', {
         method: 'delete',
         cache: 'no-cache',
+        credentials: 'include',
       })
         .then(async (res) => {
           resetOnboarding();

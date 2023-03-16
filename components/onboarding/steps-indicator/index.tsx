@@ -1,3 +1,5 @@
+'use client';
+
 import useOnboarding from '@/hooks/onboarding-manager';
 import { LeftOutlined } from '@ant-design/icons';
 import styles from './index.module.css';
@@ -9,7 +11,6 @@ export function OnboardingStepsIndicator(props: {
 }) {
   const { currentStepStatus, currentStepOrder, totalSteps } = props;
   const { rollbackInstance, loading } = useOnboarding();
-  console.log(currentStepStatus);
 
   const stepArray = [];
   for (let i = 0; i < totalSteps; i++) {

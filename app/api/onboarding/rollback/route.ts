@@ -7,7 +7,7 @@ export async function POST() {
   try {
     const instanceId = cookies().get('onboarding_instance_id');
     const response = await fetch(
-      `${process.env.GATEWAY}/v1/api/onboarding/rollback`,
+      `http://${process.env.GATEWAY_HOST}:${process.env.GATEWAY_PORT}/v1/api/onboarding/rollback`,
       {
         method: 'post',
         credentials: 'include',

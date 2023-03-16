@@ -8,7 +8,7 @@ export async function PUT(request: NextRequest) {
 
     const instanceId = cookies().get('onboarding_instance_id');
     const response = await fetch(
-      `${process.env.GATEWAY}/v1/api/onboarding/execute`,
+      `http://${process.env.GATEWAY_HOST}:${process.env.GATEWAY_PORT}/v1/api/onboarding/execute`,
       {
         method: 'put',
         credentials: 'include',
